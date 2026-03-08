@@ -8,5 +8,5 @@ rules = [
     FirewallRule(direction='in', protocol='tcp', port='443', source_ips=['0.0.0.0/0', '::/0']),
 ]
 
-if isinstance(hlp.cli.firewalls.get_by_name('tps-firewall'), BoundFirewall):
+if not isinstance(hlp.cli.firewalls.get_by_name('tps-firewall'), BoundFirewall):
     hlp.cli.firewalls.create(name='tps-firewall', rules=rules)
