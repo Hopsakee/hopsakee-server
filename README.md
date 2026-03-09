@@ -5,6 +5,7 @@ Scripts and setting files for Hopsakee's Hetzner server. So I can easily start a
 # Prerequisites
 
 - An account at Hetzner
+- SSH key registered at Hetzner
 - An Hetzner API-key
 - A DNS-server via OVHcloud
 

@@ -36,7 +36,7 @@ def setup_hetzner_server(
         frules: list[FirewallRule], # List of Firewall rules
         ):
     _setup_firewall(cli, fname, frules)
-    
+
     pass
 
 def remote(cmd: str, svr: BoundServer,  sshname: str, user: str ='ubuntu') -> None:
@@ -45,6 +45,11 @@ def remote(cmd: str, svr: BoundServer,  sshname: str, user: str ='ubuntu') -> No
     _check_ssh(sshname)
     ip = svr.public_net.ipv4.ip
     subprocess.run(f"ssh -i {Path.home() / '.ssh' / sshname} {user}@{ip} '{cmd}'", shell=True)
+
+def cc_validate(d):
+    vsc = xget('https://raw.githubusercontent.com/canonical/cloud-init/main/cloudinit/config/schemas/versions.schema.cloud-config.json').text
+    yd = yaml.load(d, Loader=yaml.FullLoader)
+    validate(yd, schema=json.loads(vsc))
 
 if __name__ == "__main__":
     cli = create_hetzner_client('HETZNER_API_KEY')
