@@ -1,0 +1,42 @@
+hostname: tps-server
+preserve_hostname: false
+
+users:
+- name: ubuntu
+  shell: /bin/bash
+  ssh_authorized_keys:
+  - {pubkey}
+  sudo:
+  - ALL=(ALL) NOPASSWD:ALL
+
+package_update: true
+
+packages:
+- git
+- curl
+- wget
+- neovim
+- tree
+- ca-certificates
+- tmux
+- sqlite3
+- btop
+- ripgrep
+- ssage
+
+runcmd:
+- |
+  # Install uv
+  sudo -u ubuntu -H bash << EOF
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  EOF
+- |
+  # Install Docker
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+  apt-get update
+  apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  # add user ubuntu to docker group, to prevent needing to use sudo for every docker command
+  usermod -aG docker ubuntu
+  # add docker network with name 'hup' so docker containers can talk to each other by container name
+  docker network create hup
