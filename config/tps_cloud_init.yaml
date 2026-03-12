@@ -41,9 +41,14 @@ runcmd:
   docker network create hup
 - |
   # Clone hopsakee-server
-  sudo -u ubuntu  -H bash << EOF
-  git clone https://github.com/Hopsakee/hopsakee-server.git
+  sudo -u ubuntu -H bash << EOF
+  git clone https://github.com/Hopsakee/hopsakee-server.git ~/hopsakee-server
   EOF
 - |
   # Install shellsage
   uv tool install shell_sage
+- |
+  # Create folder structure
+  sudo -u ubuntu -H bash << EOF
+  mkdir -p apps services config storage
+  EOF

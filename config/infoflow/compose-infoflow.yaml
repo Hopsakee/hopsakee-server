@@ -1,0 +1,15 @@
+services:
+
+  infoflow:
+    image: infoflow
+    container_name: infoflow
+    restart: unless-stopped
+    build: /home/ubuntu/apps/infoflow
+    networks:
+      - hup
+    volumes:
+      - /home/ubuntu/storage/infoflow:/home/ubuntu/apps/infoflow/data
+
+networks:
+  hup:
+    external: true
