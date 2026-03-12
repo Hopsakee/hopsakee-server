@@ -1,0 +1,7 @@
+infoflow.hopsakee.top {
+    reverse_proxy infoflow:5001
+}
+
+govchat.hopsakee.top {
+    reverse_proxy govchat:8080
+}

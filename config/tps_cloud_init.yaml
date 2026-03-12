@@ -5,7 +5,7 @@ users:
 - name: ubuntu
   shell: /bin/bash
   ssh_authorized_keys:
-  - {pubkey}
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC6iRmXFvXszceaTTGDidkMVSkE2n0nQCSizawR3e2GncxGyBjEy2/5ECFo2AYaJPgyJHjMjmTCevHluXoIo6zd1MRwXomagfmOwEUUQh/Fw28A9swACsnPt6189gRSnqcXhY94jvBTxOOYi1a9RP9o8TtBOkkjFVQvHLgeD5I6R9dJ8aDEuGjg5p2BsJCtyLgvLvB7DxWwPXhSt+0sKlozhCNAZ1rlrIfwxdnvOrIUMkRPmpCL4GymNDIJG21y5Q2NyIVfmmul1uGpz/waw4KKDBDCWd6kMb1QxoXURMQCVYX7pqJ/6UZXt8bzusggwVOjUOKszwWxVAGqYIhrRxVs/hmJN/BJUFFNpN+VztmJeg8l1a99QnoR/F/EjhSzgce0fFdc+ffpNbBKSKtZYbIPjG7EYTGK+tRNX4Fa6A63iR1yy91GlKsVEpESPVeZqsmwegPoiXIHKTWXuAOeaq3HZjhsfNZBSKPI5IF9HtmbCRqp7tNFKbsqCMLT2VGHxzs= jelle@Sledge
   sudo:
   - ALL=(ALL) NOPASSWD:ALL
 
@@ -22,7 +22,6 @@ packages:
 - sqlite3
 - btop
 - ripgrep
-- ssage
 
 runcmd:
 - |
@@ -40,3 +39,11 @@ runcmd:
   usermod -aG docker ubuntu
   # add docker network with name 'hup' so docker containers can talk to each other by container name
   docker network create hup
+- |
+  # Clone hopsakee-server
+  sudo -u ubuntu  -H bash << EOF
+  git clone https://github.com/Hopsakee/hopsakee-server.git
+  EOF
+- |
+  # Install shellsage
+  uv tool install shell_sage
