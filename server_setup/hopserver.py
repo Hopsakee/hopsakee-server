@@ -122,6 +122,9 @@ def remote(cmd: str, svr: BoundServer,  sshname: str, user: str ='ubuntu') -> No
     ip = svr.public_net.ipv4.ip
     subprocess.run(f"ssh -i {Path.home() / '.ssh' / sshname} {user}@{ip} '{cmd}'", shell=True)
 
+def deploy_apps(svr: BoundServer, sshname: str) -> None:
+    """Start the `deploy.sh` script on the server to deploy all the apps."""
+    remote("bash ~/hopsakee-server/server_setup/deploy.sh", svr, sshname)
 
 if __name__ == "__main__":
     cli = create_hetzner_client('HETZNER_API_KEY')
@@ -135,3 +138,4 @@ if __name__ == "__main__":
     ]
     fname = "tps-firewall"
     svr = setup_hetzner_server(cli, config_yaml, settings_yaml, sshname, fname, frules)
+    deploy_apps(svr, sshname)
