@@ -2,8 +2,11 @@ import os
 import yaml, json
 import subprocess
 
+from dotenv import load_dotenv
 from httpx import get as xget
 from pathlib import Path
+
+load_dotenv()
 from jsonschema import validate
 from time import sleep
 
@@ -12,6 +15,7 @@ from hcloud.images import Image
 from hcloud.server_types import ServerType
 from hcloud.servers.client import BoundServer
 from hcloud.firewalls import FirewallRule, BoundFirewall
+from hcloud.locations import Location
 
 def _check_ssh(name: str):
     """Check if private ssh-key of given name is available."""
@@ -40,6 +44,13 @@ def create_hetzner_client(keyname: str):
         raise KeyError(f"The key {e} does not exist")
 
     return Client(token=hkey)
+
+def check_cloud_init(ip: str, shhname: str):
+    cmd = f"ssh -i ~/.ssh/{sshname} -o ConnectTimeout=5 -o StrictHostKeyChecking=no ubuntu@{ip} 'cloud-init status'"
+    try:
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
+        return result.stdout.strip() if result.returncode == 0 else result.stderr.strip()
+    except: return None
 
 def setup_hetzner_server(
         cli: Client, # Hetzner client
@@ -72,7 +83,7 @@ def setup_hetzner_server(
         name=hname,
         server_type=ServerType(name=ycs['servertype']),
         image=Image(name=ycs['image']),
-        location=ycs['location'],
+        location=Location(name=ycs['location']),
         ssh_keys=[sshkey],
         firewalls=[firewall],
         user_data=cc
@@ -97,23 +108,16 @@ def setup_hetzner_server(
     if x and recreate:
         subprocess.run(f'ssh-keygen -f ~/.ssh/known_hosts -R {ip}', shell=True, capture_output=True)
 
-    print(f"Server running!\n\n`ssh -i ~/.ssh/tps_si ubuntu@{ip}`")
+    print(f"Server running!\n\n`ssh -i ~/.ssh/{sshname} ubuntu@{ip}`")
     print(f"\nWaiting for new server to be initialized")
     c = 0
-    while (status := check_cloud_init(ip)) != 'status: done':
+    while (status := check_cloud_init(ip, sshname)) != 'status: done':
         if c > 600: raise TimeoutError(f"Cloud-init stuck at: {status}")
         spinner = ['|', '/', '-', '\\']
         print(f"\r{spinner[c % 4]} Waiting...", end='', flush=True)
         c += 1
         sleep(.2)
     return svr
-
-def check_cloud_init(ip):
-    cmd = f"ssh -i ~/.ssh/tps_si -o ConnectTimeout=5 -o StrictHostKeyChecking=no ubuntu@{ip} 'cloud-init status'"
-    try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
-        return result.stdout.strip() if result.returncode == 0 else result.stderr.strip()
-    except: return None
 
 def remote(cmd: str, svr: BoundServer,  sshname: str, user: str ='ubuntu') -> None:
     """Sent bash commands to the remote server"""
@@ -128,11 +132,12 @@ def deploy_apps(svr: BoundServer, sshname: str) -> None:
 
 if __name__ == "__main__":
     cli = create_hetzner_client('HETZNER_API_KEY')
-    config_yaml = Path('../config/tps_cloud_init.yaml')
-    settings_yaml = Path('../config/settings.yaml')
-    sshname = "tps_si"
+    repo_root = Path(__file__).resolve().parent.parent
+    config_yaml = repo_root / 'config' / 'tps_cloud_init.yaml'
+    settings_yaml = repo_root / 'config' / 'settings.yaml'
+    sshname = "sledge_wsl"
     frules = [
-        FirewallRule(direction='in', protocol='tcp', port='22', source_ips=[os.environ["IP_ALLOW"]]),
+        FirewallRule(direction='in', protocol='tcp', port='22', source_ips=[ip.strip() + '/32' for ip in os.environ["IP_ALLOW"].split(',')]),
         FirewallRule(direction='in', protocol='tcp', port='80', source_ips=['0.0.0.0/0', '::/0']),
         FirewallRule(direction='in', protocol='tcp', port='443', source_ips=['0.0.0.0/0', '::/0']),
     ]
