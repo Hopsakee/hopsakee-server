@@ -129,7 +129,7 @@ if __name__ == "__main__":
     settings_yaml = Path('../config/settings.yaml')
     sshname = "tps_si"
     frules = [
-        FirewallRule(direction='in', protocol='tcp', port='22', source_ips=['0.0.0.0/0', '::/0']),
+        FirewallRule(direction='in', protocol='tcp', port='22', source_ips=['86.83.57.45']),
         FirewallRule(direction='in', protocol='tcp', port='80', source_ips=['0.0.0.0/0', '::/0']),
         FirewallRule(direction='in', protocol='tcp', port='443', source_ips=['0.0.0.0/0', '::/0']),
     ]
