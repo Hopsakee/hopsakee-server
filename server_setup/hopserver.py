@@ -8,6 +8,7 @@ from pathlib import Path
 
 load_dotenv()
 from jsonschema import validate
+import time
 from time import sleep
 
 from hcloud import Client
@@ -45,8 +46,8 @@ def create_hetzner_client(keyname: str):
 
     return Client(token=hkey)
 
-def check_cloud_init(ip: str, shhname: str):
-    cmd = f"ssh -i ~/.ssh/{sshname} -o ConnectTimeout=5 -o StrictHostKeyChecking=no ubuntu@{ip} 'cloud-init status'"
+def check_cloud_init(ip: str, sshname: str):
+    cmd = f"ssh -i ~/.ssh/{sshname} -o ConnectTimeout=5 -o StrictHostKeyChecking=no -o BatchMode=yes ubuntu@{ip} 'cloud-init status'"
     try:
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
         return result.stdout.strip() if result.returncode == 0 else result.stderr.strip()
@@ -110,13 +111,18 @@ def setup_hetzner_server(
 
     print(f"Server running!\n\n`ssh -i ~/.ssh/{sshname} ubuntu@{ip}`")
     print(f"\nWaiting for new server to be initialized")
+    timeout = 100
+    start = time.time()
     c = 0
     while (status := check_cloud_init(ip, sshname)) != 'status: done':
-        if c > 600: raise TimeoutError(f"Cloud-init stuck at: {status}")
+        if status and 'error' in status: raise RuntimeError(f"Cloud-init failed: {status}")
+        elapsed = time.time() - start
+        if elapsed > timeout: raise TimeoutError(f"Cloud-init stuck after {elapsed:.0f}s at: {status}")
         spinner = ['|', '/', '-', '\\']
-        print(f"\r{spinner[c % 4]} Waiting...", end='', flush=True)
+        print(f"\r{spinner[c % 4]} Waiting... ({elapsed:.0f}s)", end='', flush=True)
         c += 1
-        sleep(.2)
+        sleep(2)
+    print("Server initialized!")
     return svr
 
 def remote(cmd: str, svr: BoundServer,  sshname: str, user: str ='ubuntu') -> None:

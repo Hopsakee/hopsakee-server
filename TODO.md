@@ -6,3 +6,4 @@
 - [ ] `cfile` prepends `#cloud-config` — smart, keeps your YAML file clean. But it assumes the file never already has that header — worth a quick check or a comment explaining why.
 - [ ] `__main__` block — the firewall rules and sshname are hardcoded there. Eventually those probably belong in `settings.yaml` too.
 - [ ] If I only want to redeploy the apps, the server shouldn't be recreated.
+- [ ] At the tutorial, you have to also place the public key in the cloud init yaml, and you also have to add the public key to the Hetzner server manually. I'm talking about the SSH keys.
