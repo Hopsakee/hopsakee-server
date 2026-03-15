@@ -1,13 +1,8 @@
 #!/bin/bash
 LOGFILE="$HOME/logs/build.log"
 
-# Check if the log directory exists, if not create it
-LOGDIR="$(dirname "$LOGFILE")"
-if [ ! -d "$LOGDIR" ]; then
-  mkdir -p "$LOGDIR"
-fi
-
 # Check if the log file exists, if not create it
+# (the LOGDIR is created at server creation time `tps_cloud_init.yaml`)
 if [ ! -f "$LOGFILE" ]; then
   touch "$LOGFILE"
 fi

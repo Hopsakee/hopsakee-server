@@ -151,6 +151,6 @@ if __name__ == "__main__":
         FirewallRule(direction='in', protocol='tcp', port='443', source_ips=['0.0.0.0/0', '::/0']),
     ]
     fname = "tps-firewall"
-    # svr = setup_hetzner_server(cli, config_yaml, settings_yaml, sshname, fname, frules)
-    svr = connect_server(cli, "tps-server")
+    svr = setup_hetzner_server(cli, config_yaml, settings_yaml, sshname, fname, frules)
+    # svr = connect_server(cli, "tps-server")
     deploy_apps(svr, sshname)

@@ -52,5 +52,5 @@ runcmd:
 - |
   # Create folder structure
   sudo -u ubuntu -H bash << 'EOF'
-  mkdir -p $HOME/apps $HOME/services $HOME/config $HOME/storage
+  mkdir -p $HOME/apps $HOME/services $HOME/config $HOME/storage $Home/logs
   EOF
