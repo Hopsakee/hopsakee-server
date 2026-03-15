@@ -8,7 +8,7 @@ services:
     networks:
       - hup
     volumes:
-      - /mnt/HC_Volume_105122334:/home/ubuntu/apps/infoflow/data
+      - /mnt/HC_Volume_105122334:/data
 
 networks:
   hup:
