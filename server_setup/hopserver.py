@@ -125,6 +125,9 @@ def setup_hetzner_server(
     print("Server initialized!")
     return svr
 
+def connect_server(cli: Client, svrname: str) -> BoundServer:
+    return cli.servers.get_by_name(svrname)
+
 def remote(cmd: str, svr: BoundServer,  sshname: str, user: str ='ubuntu') -> None:
     """Sent bash commands to the remote server"""
     # TODO This check is on every remote call, make more efficient
@@ -148,5 +151,6 @@ if __name__ == "__main__":
         FirewallRule(direction='in', protocol='tcp', port='443', source_ips=['0.0.0.0/0', '::/0']),
     ]
     fname = "tps-firewall"
-    svr = setup_hetzner_server(cli, config_yaml, settings_yaml, sshname, fname, frules)
+    # svr = setup_hetzner_server(cli, config_yaml, settings_yaml, sshname, fname, frules)
+    svr = connect_server(cli, "tps-server")
     deploy_apps(svr, sshname)
