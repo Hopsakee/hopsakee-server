@@ -1,0 +1,42 @@
+server:
+  address: 'tcp://0.0.0.0:9091'
+
+jwt_secret: {{ env "AUTHELIA_JWT_SECRET" }}
+
+session:
+  secret: {{ env "AUTHELIA_SESSION_SECRET" }}
+  domain: hopsakee.top
+
+storage:
+  encryption_key: {{ env "AUTHELIA_STORAGE_ENCRYPTION_KEY" }}
+  local:
+    path: /data/authelia/db.sqlite3
+
+authentication_backend:
+  file:
+    path: /config/authelia/users_database.yml
+
+notifier:
+  smtp:
+    username: {{ env "AUTHELIA_SMTP_USERNAME" }}
+    password: {{ env "AUTHELIA_SMTP_PASSWORD" }}
+    address: 'smtp://smtp.gmail.com:587'
+    sender: {{ env "AUTHELIA_SMTP_USERNAME" }}
+
+access_control:
+  default_policy: deny
+  rules:
+    - domain: auth.hopsakee.top
+      policy: bypass
+    - domain: infoflow.hopsakee.top
+      policy: one_factor
+      subject:
+        - ['group:me', 'group:admins']
+    - domain: govchat.hopsakee.top
+      policy: one_factor
+      subject:
+        - ['group:me', 'group:work', 'group:admins']
+    - domain: netflix-movies.hopsakee.top
+      policy: one_factor
+      subject:
+        - ['group:me', 'group:friends', 'group:admins']
