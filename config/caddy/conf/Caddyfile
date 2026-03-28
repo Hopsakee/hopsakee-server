@@ -1,7 +1,19 @@
+auth.hopsakee.top {
+	reverse_proxy authelia:9091
+}
+
 infoflow.hopsakee.top {
-    reverse_proxy infoflow:5001
+	forward_auth authelia:9091 {
+		uri /api/authz/forward-auth
+		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+	}
+	reverse_proxy infoflow:5001
 }
 
 govchat.hopsakee.top {
+	forward_auth authelia:9091 {
+		uri /api/authz/forward-auth
+		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+	}
     reverse_proxy govchat:8080
 }

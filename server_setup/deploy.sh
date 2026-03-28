@@ -16,4 +16,5 @@ deploy_app() {
 }
 
 deploy_app "caddy"     "$SCRIPT_DIR/deploy-caddy.sh"
+deploy_app "authelia"  "$SCRIPT_DIR/deploy-authelia.sh"
 deploy_app "infoflow"  "$SCRIPT_DIR/deploy-infoflow.sh"
