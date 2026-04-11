@@ -19,7 +19,6 @@ deploy_app() {
 bash "$SCRIPT_DIR/deploy-caddy.sh" || { echo "❌ Caddy failed — aborting"; exit 1; }
 bash "$SCRIPT_DIR/deploy-authelia.sh" || { echo "❌ Authelia failed — aborting"; exit 1; }
 
-
 # These can fail independently
 deploy_app "infoflow"  "$SCRIPT_DIR/deploy-infoflow.sh"
 deploy_app "govchat"   "$SCRIPT_DIR/deploy-govchat.sh"
