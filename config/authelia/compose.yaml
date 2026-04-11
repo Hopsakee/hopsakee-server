@@ -1,0 +1,20 @@
+services:
+  authelia:
+    image: authelia/authelia:latest
+    container_name: authelia
+    restart: unless-stopped
+    volumes:
+      - /home/ubuntu/hopsakee-server/config/authelia:/config/authelia
+      - /data/authelia:/data/authelia
+    environment:
+      - AUTHELIA_JWT_SECRET=${AUTHELIA_JWT_SECRET}
+      - AUTHELIA_SESSION_SECRET=${AUTHELIA_SESSION_SECRET}
+      - AUTHELIA_STORAGE_ENCRYPTION_KEY=${AUTHELIA_STORAGE_ENCRYPTION_KEY}
+      - AUTHELIA_SMTP_USERNAME=${AUTHELIA_SMTP_USERNAME}
+      - AUTHELIA_SMTP_PASSWORD=${AUTHELIA_SMTP_PASSWORD}
+    networks:
+      - hup
+
+networks:
+  hup:
+    external: true
