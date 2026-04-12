@@ -12,7 +12,7 @@ services:
       - AUTHELIA_SESSION_SECRET_FILE=/secrets/session_secret
       - AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/secrets/storage_encryption_key
       - AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/secrets/smtp_password
-      - AUTHELIA_NOTIFIER_SMTP_USERNAME_FILE=/secrets/smtp_username
+      - AUTHELIA_NOTIFIER_SMTP_USERNAME=jfdejong@gmail.com
     networks:
       - hup
 
