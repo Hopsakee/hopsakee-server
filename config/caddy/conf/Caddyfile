@@ -15,5 +15,5 @@ govchat.hopsakee.top {
 		uri /api/authz/forward-auth
 		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
 	}
-    reverse_proxy govchat:8080
+	reverse_proxy govchat:8080
 }

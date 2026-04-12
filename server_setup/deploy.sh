@@ -15,6 +15,10 @@ deploy_app() {
     fi
 }
 
-deploy_app "caddy"     "$SCRIPT_DIR/deploy-caddy.sh" || { echo "❌ Caddy failed — aborting"; exit 1; }
-deploy_app "authelia"  "$SCRIPT_DIR/deploy-authelia.sh" || { echo "❌ Authelia failed — aborting"; exit 1; }
+# These must succeed - exit immediately on failure
+bash "$SCRIPT_DIR/deploy-caddy.sh" || { echo "❌ Caddy failed — aborting"; exit 1; }
+bash "$SCRIPT_DIR/deploy-authelia.sh" || { echo "❌ Authelia failed — aborting"; exit 1; }
+
+# These can fail independently
 deploy_app "infoflow"  "$SCRIPT_DIR/deploy-infoflow.sh"
+#deploy_app "govchat"   "$SCRIPT_DIR/deploy-govchat.sh"
