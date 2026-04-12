@@ -21,4 +21,4 @@ bash "$SCRIPT_DIR/deploy-authelia.sh" || { echo "❌ Authelia failed — abortin
 
 # These can fail independently
 deploy_app "infoflow"  "$SCRIPT_DIR/deploy-infoflow.sh"
-deploy_app "govchat"   "$SCRIPT_DIR/deploy-govchat.sh"
+#deploy_app "govchat"   "$SCRIPT_DIR/deploy-govchat.sh"
