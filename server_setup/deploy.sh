@@ -15,6 +15,6 @@ deploy_app() {
     fi
 }
 
-deploy_app "caddy"     "$SCRIPT_DIR/deploy-caddy.sh"
-deploy_app "authelia"  "$SCRIPT_DIR/deploy-authelia.sh"
+deploy_app "caddy"     "$SCRIPT_DIR/deploy-caddy.sh" || { echo "❌ Caddy failed — aborting"; exit 1; }
+deploy_app "authelia"  "$SCRIPT_DIR/deploy-authelia.sh" || { echo "❌ Authelia failed — aborting"; exit 1; }
 deploy_app "infoflow"  "$SCRIPT_DIR/deploy-infoflow.sh"
