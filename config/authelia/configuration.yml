@@ -18,7 +18,7 @@ storage:
 
 authentication_backend:
   file:
-    path: /config/authelia/users_database.yml
+    path: /config/users_database.yml
 
 notifier:
   smtp:
