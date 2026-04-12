@@ -128,12 +128,70 @@ def setup_hetzner_server(
 def connect_server(cli: Client, svrname: str) -> BoundServer:
     return cli.servers.get_by_name(svrname)
 
-def remote(cmd: str, svr: BoundServer,  sshname: str, user: str ='ubuntu') -> None:
+def remote(cmd: str,
+           svr: BoundServer, # The boundserver with the Hetzner python client
+           sshname: str, # name of the ssh secret
+           user: str='ubuntu', # name of the user to login
+           dns: str='hopsakee.top' # name of the dns server, if available
+           ) -> None:
     """Sent bash commands to the remote server"""
     # TODO This check is on every remote call, make more efficient
     _check_ssh(sshname)
-    ip = svr.public_net.ipv4.ip
-    subprocess.run(f"ssh -i {Path.home() / '.ssh' / sshname} {user}@{ip} '{cmd}'", shell=True)
+    if not dns:
+        dns = svr.public_net.ipv4.ip
+    subprocess.run(f"ssh -i {Path.home() / '.ssh' / sshname} {user}@{dns} '{cmd}'", shell=True)
+
+def push_file(fn: Path, # Path of the file to push to the server
+              dn: str, # Destination map on the server for the file
+              svr: BoundServer, # The boundserver with the Hetzner python client
+              sshname: str, # name of the ssh secret
+              user: str='ubuntu', # name of the user to login
+              dns: str='hopsakee.top' # name of the dns server, if available
+              ) -> None:
+    """Copy a file from the local client to the remote server"""
+    # TODO This check is on every remote call, make more efficient
+    _check_ssh(sshname)
+    if not dns:
+        dns = svr.public_net.ipv4.ip
+    subprocess.run(f"scp -i {Path.home() / '.ssh' / sshname} {fn} {user}@{dns}:{dn}", shell=True)
+
+
+def push_secrets(svr: BoundServer,
+                 sshname: str,
+                 users_db: Path, # Local path to users_database.yml
+                 dns: str = 'hopsakee.top'
+                 ) -> None:
+    """Push secrets and users_database.yml to the server.
+    
+    - Generates fresh JWT and session secrets on the server
+    - Pushes persistent secrets from local .env to ~/.env on server
+    - Pushes users_database.yml to /data/authelia/ only if it doesn't exist yet
+    """
+    # Generate fresh secrets directly on the server
+    remote("python3 -c \"import secrets; print('AUTHELIA_JWT_SECRET=' + secrets.token_hex(32))\" >> ~/.env", svr, sshname, dns=dns)
+    remote("python3 -c \"import secrets; print('AUTHELIA_SESSION_SECRET=' + secrets.token_hex(32))\" >> ~/.env", svr, sshname, dns=dns)
+
+    # Push persistent secrets from local .env to server
+    persistent_keys = ['AUTHELIA_STORAGE_ENCRYPTION_KEY', 'AUTHELIA_SMTP_USERNAME', 'AUTHELIA_SMTP_PASSWORD']
+    for key in persistent_keys:
+        value = os.environ.get(key)
+        if not value:
+            raise KeyError(f"Missing required secret in local .env: {key}")
+        remote(f"echo '{key}={value}' >> ~/.env", svr, sshname, dns=dns)
+
+    # Push users_database.yml only if it doesn't exist yet on the server
+    remote("mkdir -p /data/authelia", svr, sshname, dns=dns)
+    result = subprocess.run(
+        f"ssh -i {Path.home() / '.ssh' / sshname} ubuntu@{dns} 'test -f /data/authelia/users_database.yml'",
+        shell=True
+    )
+    if result.returncode != 0:
+        push_file(users_db, '/data/authelia/users_database.yml', svr, sshname, dns=dns)
+        print("users_database.yml uploaded.")
+    else:
+        print("users_database.yml already exists on server — skipping upload.")
+    print("Secrets pushed to server.")
+
 
 def deploy_apps(svr: BoundServer, sshname: str) -> None:
     """Start the `deploy.sh` script on the server to deploy all the apps."""
