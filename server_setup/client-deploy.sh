@@ -10,7 +10,7 @@ SSH="ssh -i ~/.ssh/sledge_wsl"
 SECRETS_DIR="/data/authelia/secrets"
 
 echo ">>> Creating secrets directory on server..."
-$SSH $SERVER "sudo mkdir -p $SECRETS_DIR && sudo chown -R ubuntu:ubuntu /data/authelia"
+$SSH $SERVER "sudo mkdir -p $SECRETS_DIR && sudo chown -R ubuntu:ubuntu /data/authelia && sudo chown -R ubuntu:ubuntu ~/hopsakee-server"
 
 echo ">>> Pushing persistent secrets..."
 $SSH $SERVER "echo -n '$AUTHELIA_STORAGE_ENCRYPTION_KEY' > $SECRETS_DIR/storage_encryption_key"
