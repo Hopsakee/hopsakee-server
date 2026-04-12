@@ -6,7 +6,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../.env"
 set +a
 
 SERVER="ubuntu@hopsakee.top"
-SSH="ssh -i ~/.ssh/tps_si"
+SSH="ssh -i ~/.ssh/sledge_wsl"
 SECRETS_DIR="/data/authelia/secrets"
 
 echo ">>> Creating secrets directory on server..."
