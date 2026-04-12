@@ -1,12 +1,23 @@
+(authelia_forward_auth) {
+	forward_auth authelia:9091 {
+		uri /api/authz/forward-auth
+		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+	}
+}
+
+(logout) {
+	handle /logout {
+		redir https://auth.hopsakee.top/logout 302
+	}
+}
+
 auth.hopsakee.top {
 	reverse_proxy authelia:9091
 }
 
 infoflow.hopsakee.top {
-	forward_auth authelia:9091 {
-		uri /api/authz/forward-auth
-		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
-	}
+	import logout
+	import authelia_forward_auth
 	reverse_proxy infoflow:5001
 
 	handle_errors 403 503 {
@@ -15,10 +26,8 @@ infoflow.hopsakee.top {
 }
 
 govchat.hopsakee.top {
-	forward_auth authelia:9091 {
-		uri /api/authz/forward-auth
-		copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
-	}
+	import logout
+	import authelia_forward_auth
 	reverse_proxy govchat:8080
 
 	handle_errors 403 503 {
