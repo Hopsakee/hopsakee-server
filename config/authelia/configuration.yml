@@ -2,17 +2,14 @@ server:
   address: 'tcp://0.0.0.0:9091'
 
 identity_validation:
-  reset_password:
-    jwt_secret: /secrets/jwt_secret
+  reset_password: {}
 
 session:
-  secret: /secrets/session_secret
   cookies:
     - domain: hopsakee.top
       authelia_url: https://auth.hopsakee.top
 
 storage:
-  encryption_key: /secrets/storage_encryption_key
   local:
     path: /data/authelia/db.sqlite3
 
@@ -22,10 +19,8 @@ authentication_backend:
 
 notifier:
   smtp:
-    username: /secrets/smtp_username
-    password: /secrets/smtp_password
     address: 'smtp://smtp.gmail.com:587'
-    sender: /secrets/smtp_username
+    sender: jfdejong@gmail.com
 
 access_control:
   default_policy: deny
