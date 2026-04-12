@@ -28,7 +28,7 @@ infoflow.hopsakee.top {
 govchat.hopsakee.top {
 	import logout
 	import authelia_forward_auth
-	reverse_proxy govchat:8080
+	reverse_proxy govchat:8081
 
 	handle_errors 403 503 {
 		respond "Access denied" 403
