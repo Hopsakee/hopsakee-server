@@ -22,4 +22,4 @@ $SSH $SERVER "python3 -c \"import secrets; open('$SECRETS_DIR/jwt_secret','w').w
 $SSH $SERVER "python3 -c \"import secrets; open('$SECRETS_DIR/session_secret','w').write(secrets.token_hex(32))\""
 
 echo ">>> Pulling latest git changes and deploying..."
-$SSH $SERVER "cd ~/hopsakee-server && git pull && bash ~/hopsakee-server/server_setup/server-deploy.sh"
+$SSH $SERVER "cd ~/hopsakee-server && git fetch origin && git reset --hard origin/main && bash ~/hopsakee-server/server_setup/server-deploy.sh"
