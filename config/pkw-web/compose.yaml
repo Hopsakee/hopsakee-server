@@ -1,0 +1,17 @@
+services:
+  pkw-web:
+    image: pkw-web
+    container_name: pkw-web
+    restart: unless-stopped
+    build: /home/ubuntu/apps/pkw-web
+    environment:
+      - WIKI_PATH=/app/data/wiki
+      - APP_PORT=8080
+    networks:
+      - hup
+    volumes:
+      - /mnt/HC_Volume_105122334/pkw-wiki:/app/data/wiki:ro
+
+networks:
+  hup:
+    external: true

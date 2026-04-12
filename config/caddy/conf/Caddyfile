@@ -34,3 +34,13 @@ govchat.hopsakee.top {
 		respond "Access denied" 403
 	}
 }
+
+datalab-knowledge.hopsakee.top {
+	import logout
+	import authelia_forward_auth
+    	reverse_proxy pkw-web:8080
+
+	handle_errors 403 503 {
+		respond "Access denied" 403
+    }
+}
