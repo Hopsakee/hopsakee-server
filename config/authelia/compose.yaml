@@ -4,7 +4,7 @@ services:
     container_name: authelia
     restart: unless-stopped
     volumes:
-      - /home/ubuntu/hopsakee-server/config/authelia:/config/authelia
+      - /home/ubuntu/hopsakee-server/config/authelia:/config
       - /data/authelia:/data/authelia
       - /data/authelia/secrets:/secrets
     environment:
