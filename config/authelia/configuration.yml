@@ -1,14 +1,18 @@
 server:
   address: 'tcp://0.0.0.0:9091'
 
-jwt_secret: {{ env "AUTHELIA_JWT_SECRET" }}
+identity_validation:
+  reset_password:
+    jwt_secret: /secrets/jwt_secret
 
 session:
-  secret: {{ env "AUTHELIA_SESSION_SECRET" }}
-  domain: hopsakee.top
+  secret: /secrets/session_secret
+  cookies:
+    - domain: hopsakee.top
+      authelia_url: https://auth.hopsakee.top
 
 storage:
-  encryption_key: {{ env "AUTHELIA_STORAGE_ENCRYPTION_KEY" }}
+  encryption_key: /secrets/storage_encryption_key
   local:
     path: /data/authelia/db.sqlite3
 
@@ -18,10 +22,10 @@ authentication_backend:
 
 notifier:
   smtp:
-    username: {{ env "AUTHELIA_SMTP_USERNAME" }}
-    password: {{ env "AUTHELIA_SMTP_PASSWORD" }}
+    username: /secrets/smtp_username
+    password: /secrets/smtp_password
     address: 'smtp://smtp.gmail.com:587'
-    sender: {{ env "AUTHELIA_SMTP_USERNAME" }}
+    sender: /secrets/smtp_username
 
 access_control:
   default_policy: deny

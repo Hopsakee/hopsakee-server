@@ -167,17 +167,27 @@ def push_secrets(svr: BoundServer,
     - Pushes persistent secrets from local .env to ~/.env on server
     - Pushes users_database.yml to /data/authelia/ only if it doesn't exist yet
     """
-    # Generate fresh secrets directly on the server
-    remote("python3 -c \"import secrets; print('AUTHELIA_JWT_SECRET=' + secrets.token_hex(32))\" >> ~/.env", svr, sshname, dns=dns)
-    remote("python3 -c \"import secrets; print('AUTHELIA_SESSION_SECRET=' + secrets.token_hex(32))\" >> ~/.env", svr, sshname, dns=dns)
+    # Create secrets directory on persistent volume
+    remote("mkdir -p /data/authelia/secrets", svr, sshname, dns=dns)
 
-    # Push persistent secrets from local .env to server
-    persistent_keys = ['AUTHELIA_STORAGE_ENCRYPTION_KEY', 'AUTHELIA_SMTP_USERNAME', 'AUTHELIA_SMTP_PASSWORD']
-    for key in persistent_keys:
-        value = os.environ.get(key)
+    # Generate fresh secrets and write as individual files (no trailing newline)
+    import secrets as _secrets
+    jwt_secret = _secrets.token_hex(32)
+    session_secret = _secrets.token_hex(32)
+    remote(f"echo -n '{jwt_secret}' > /data/authelia/secrets/jwt_secret", svr, sshname, dns=dns)
+    remote(f"echo -n '{session_secret}' > /data/authelia/secrets/session_secret", svr, sshname, dns=dns)
+
+    # Push persistent secrets from local .env as individual files (no trailing newline)
+    persistent_keys = {
+        'AUTHELIA_STORAGE_ENCRYPTION_KEY': 'storage_encryption_key',
+        'AUTHELIA_SMTP_USERNAME': 'smtp_username',
+        'AUTHELIA_SMTP_PASSWORD': 'smtp_password',
+    }
+    for env_key, filename in persistent_keys.items():
+        value = os.environ.get(env_key)
         if not value:
-            raise KeyError(f"Missing required secret in local .env: {key}")
-        remote(f"echo '{key}={value}' >> ~/.env", svr, sshname, dns=dns)
+            raise KeyError(f"Missing required secret in local .env: {env_key}")
+        remote(f"echo -n '{value}' > /data/authelia/secrets/{filename}", svr, sshname, dns=dns)
 
     # Push users_database.yml only if it doesn't exist yet on the server
     remote("mkdir -p /data/authelia", svr, sshname, dns=dns)
