@@ -5,8 +5,8 @@ services:
     restart: unless-stopped
     volumes:
       - /home/ubuntu/hopsakee-server/config/authelia:/config
-      - /data/authelia:/data/authelia
-      - /data/authelia/secrets:/secrets
+      - /mnt/HC_Volume_105122334/authelia:/data/authelia
+      - /mnt/HC_Volume_105122334/authelia/secrets:/secrets
     environment:
       - AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE=/secrets/jwt_secret
       - AUTHELIA_SESSION_SECRET_FILE=/secrets/session_secret
