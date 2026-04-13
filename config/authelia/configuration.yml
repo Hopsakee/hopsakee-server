@@ -31,6 +31,10 @@ access_control:
       policy: one_factor
       subject:
         - ['group:me', 'group:admins']
+    - domain: datalab-knowledge.hopsakee.top
+      policy: one_factor
+      subject:
+        - ['group:me', 'group:work', 'group:admins']
     - domain: govchat.hopsakee.top
       policy: one_factor
       subject:
