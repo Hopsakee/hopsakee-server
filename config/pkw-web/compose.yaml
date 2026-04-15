@@ -10,7 +10,7 @@ services:
     networks:
       - hup
     volumes:
-      - /mnt/HC_Volume_105122334/pkw-wiki:/app/data/wiki:ro
+      - /mnt/HC_Volume_105122334/pkw-wiki/wiki:/app/data/wiki:ro
 
 networks:
   hup:
